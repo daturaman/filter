@@ -26,6 +26,7 @@ public class FilterTest {
 
     @Test
     public void filterWhereAgeIsGreaterThan25() throws Exception {
-
+        //new ResourceFilterBuilder().is("25");//FIXME
+        Filter age = new ResourceFilterBuilder().where("age").is("31");
     }
 }
