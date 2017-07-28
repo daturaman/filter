@@ -8,6 +8,8 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.runners.Parameterized.Parameter;
 import static org.junit.runners.Parameterized.Parameters;
 
@@ -28,5 +30,6 @@ public class FilterTest {
     public void filterWhereAgeIsGreaterThan25() throws Exception {
         //new ResourceFilterBuilder().is("25");//FIXME
         Filter age = new ResourceFilterBuilder().where("age").is("31");
+        assertThat(age.matches(resource), is(true));
     }
 }
