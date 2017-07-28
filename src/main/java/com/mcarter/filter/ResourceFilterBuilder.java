@@ -2,6 +2,7 @@ package com.mcarter.filter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class ResourceFilterBuilder implements FilterBuilder<ResourceFilter, String, String> {
 
@@ -15,8 +16,8 @@ public class ResourceFilterBuilder implements FilterBuilder<ResourceFilter, Stri
 
     @Override
     public ResourceFilter is(String value) {
-        Map<String, String> propertiesToMatch = new HashMap<>();
-        propertiesToMatch.put(property, value);//TODO need the operand here too
+        Map<String, Predicate<String>> propertiesToMatch = new HashMap<>();
+        propertiesToMatch.put(property, Predicate.isEqual(value));
         return new ResourceFilter(propertiesToMatch);
     }
 
