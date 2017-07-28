@@ -16,14 +16,7 @@ class ResourceFilter implements Filter<Map<String, String>> {
 
     @Override
     public boolean matches(Map<String, String> other) {
-
         boolean result = false;
-//        other.forEach((k, v) -> {
-//            //Run predicate for each property selected for filtering
-//            if(propsToMatch.containsKey(k)){
-//                result = propsToMatch.get(k).test(v);
-//            }
-//        });
         for (Map.Entry<String, String> kvp : other.entrySet()) {
             if(propsToMatch.containsKey(kvp.getKey())){
                 result = propsToMatch.get(kvp.getKey()).test(kvp.getValue());

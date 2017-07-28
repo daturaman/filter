@@ -1,28 +1,21 @@
 package com.mcarter.filter;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Predicate;
 
-public class ResourceFilterBuilder implements FilterBuilder<ResourceFilter, String, String> {
-
-    private String property;
+public class ResourceFilterBuilder extends FilterBuilder<ResourceFilter, String, String> {
 
     @Override
-    public FilterBuilder where(String property) {
-        this.property = property;
-        return this;
+    public Predicate<String> isEqualTo(String value) {
+          return Predicate.isEqual(value);
     }
 
     @Override
-    public ResourceFilter is(String value) {
-        Map<String, Predicate<String>> propertiesToMatch = new HashMap<>();
-        propertiesToMatch.put(property, Predicate.isEqual(value));
-        return new ResourceFilter(propertiesToMatch);
-    }
-
-    @Override
-    public ResourceFilter isGreaterThan(String value) {
+    public Predicate<String> isGreaterThan(String value) {
         return null;
+    }
+
+    @Override
+    public ResourceFilter build() {
+        return new ResourceFilter(propsToMatch);
     }
 }
