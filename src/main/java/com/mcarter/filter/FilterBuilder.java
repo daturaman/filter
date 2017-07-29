@@ -1,30 +1,34 @@
 package com.mcarter.filter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
 public abstract class FilterBuilder<T extends Filter, K, V> {
 
-    protected Map<K, Predicate<V>> propsToMatch = new HashMap<>();
+    protected Map<K, Predicate<V>> propsToMatch = new LinkedHashMap<>();
 
-    //Filter olderThan18 = builder().where("age", isGreaterThan("18"));
-    //Filter roleIsAdmin = builder().where("role").isEqualTo("administrator");
-    //Filter f = olderThan18.and(roleIsAdmin).and(anotherFilter).or(yetAnotherFilter);
-    //Filter f1 = builder().where("firstname", isEqualTo("Bob").and("age", isGreaterThan("15");
-
-    public abstract Predicate<V> isEqualTo(V value);
-
-    public abstract Predicate<V> isGreaterThan(V value);
-
-    public FilterBuilder where(K property, Predicate<V> predicate){
-        propsToMatch.put(property, predicate);
-        return this;
+    @FunctionalInterface
+    public interface FilterQuery<K,V> {
+        PredicateQuery<V> where(K property);
     }
 
-    public abstract T build();
+    public interface PredicateQuery<V> {
+        BuildFilter isEqualTo(V value);
+        BuildFilter isGreaterThan(V value);
+        //and: FilterQuery
+        FilterQuery and();
+        //or: FilterQuery
+    }
 
-    //T fromString();
-    //toString();
+    @FunctionalInterface
+    public interface BuildFilter<T> {
+        Filter<T> build();
+    }
 
+    public abstract FilterQuery<K,V> filter();
 }
+
+// FilterBuilder builder
+// builder.filter().where("role").isEqualTo("admin").build();
+//

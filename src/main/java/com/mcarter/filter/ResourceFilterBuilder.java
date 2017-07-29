@@ -1,21 +1,39 @@
 package com.mcarter.filter;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.Predicate;
 
 public class ResourceFilterBuilder extends FilterBuilder<ResourceFilter, String, String> {
 
-    @Override
-    public Predicate<String> isEqualTo(String value) {
-          return Predicate.isEqual(value);
-    }
+    private Queue<String> properties = new LinkedList<>();
 
     @Override
-    public Predicate<String> isGreaterThan(String value) {
-        return null;
+    public FilterQuery<String, String> filter() {
+        return new ResourceFilterQuery();
     }
 
-    @Override
-    public ResourceFilter build() {
-        return new ResourceFilter(propsToMatch);
+    private class ResourceFilterQuery implements FilterQuery<String, String>{
+        @Override
+        public PredicateQuery<String> where(String property) {
+            return new PredicateQuery<String>() {
+                @Override
+                public BuildFilter isEqualTo(String value) {
+                    propsToMatch.put(property, Predicate.isEqual(value));
+                    return () -> new ResourceFilter(propsToMatch);
+                }
+
+                @Override
+                public BuildFilter isGreaterThan(String value) {
+                    return null;
+                }
+
+                @Override
+                public FilterQuery and() {
+                    //TODO See Predicate.and 
+                    return new ResourceFilterQuery();
+                }
+            };
+        }
     }
 }
