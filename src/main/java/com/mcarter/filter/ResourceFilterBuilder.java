@@ -22,17 +22,6 @@ public class ResourceFilterBuilder extends FilterBuilder<ResourceFilter, String,
                     propsToMatch.put(property, Predicate.isEqual(value));
                     return () -> new ResourceFilter(propsToMatch);
                 }
-
-                @Override
-                public BuildFilter isGreaterThan(String value) {
-                    return null;
-                }
-
-                @Override
-                public FilterQuery and() {
-                    //TODO See Predicate.and 
-                    return new ResourceFilterQuery();
-                }
             };
         }
     }

@@ -7,5 +7,15 @@ package com.mcarter.filter;
  */
 @FunctionalInterface
 public interface Filter<T> {
-    boolean matches(T other);
+    boolean matches(T t);
+
+    default Filter<T> and(Filter<T> other){
+        return t -> this.matches(t) && other.matches(t);
+    }
+
+    default Filter<T> or(Filter<T> other) {
+        return t -> this.matches(t) || other.matches(t);
+    }
+
+    //TODO not
 }

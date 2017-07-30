@@ -15,13 +15,9 @@ public abstract class FilterBuilder<T extends Filter, K, V> {
 
     public interface PredicateQuery<V> {
         BuildFilter isEqualTo(V value);
-        BuildFilter isGreaterThan(V value);
-        //and: FilterQuery
-        FilterQuery and();
-        //or: FilterQuery
     }
 
-    @FunctionalInterface
+
     public interface BuildFilter<T> {
         Filter<T> build();
     }
