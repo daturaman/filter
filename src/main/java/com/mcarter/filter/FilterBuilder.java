@@ -1,30 +1,29 @@
 package com.mcarter.filter;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.Predicate;
-
-public abstract class FilterBuilder<T extends Filter, K, V> {
-
-    protected Map<K, Predicate<V>> propsToMatch = new LinkedHashMap<>();
+/**
+ * Builder for creating Filters of a given type. Uses the fluent interface pattern to provide a DSL
+ * for creating filters, the structure of which is enforced by nesting interfaces.
+ *
+ * @param <T> The type whose properties will be filtered.
+ * @param <K>
+ * @param <V>
+ */
+public abstract class FilterBuilder<T, K, V> {
 
     @FunctionalInterface
-    public interface FilterQuery<K,V> {
-        PredicateQuery<V> where(K property);
+    public interface FilterQuery<T, K, V> {
+        PredicateQuery<T, V> where(K property);
     }
 
-    public interface PredicateQuery<V> {
-        BuildFilter isEqualTo(V value);
+    public interface PredicateQuery<T, V> {
+        Filter<T> isEqualTo(V value);
+
+        Filter<T> isGreaterThan(V value);
+
+        Filter<T> isLessThan(V value);
+
+        Filter<T> matches(V value);
     }
 
-
-    public interface BuildFilter<T> {
-        Filter<T> build();
-    }
-
-    public abstract FilterQuery<K,V> filter();
+    public abstract FilterQuery<T, K, V> filter();
 }
-
-// FilterBuilder builder
-// builder.filter().where("role").isEqualTo("admin").build();
-//

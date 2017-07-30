@@ -17,5 +17,7 @@ public interface Filter<T> {
         return t -> this.matches(t) || other.matches(t);
     }
 
-    //TODO not
+    default Filter<T> not(){
+        return t -> !this.matches(t);
+    }
 }
