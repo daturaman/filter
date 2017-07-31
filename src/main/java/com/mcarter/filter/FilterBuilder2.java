@@ -7,27 +7,28 @@
  */
 package com.mcarter.filter;
 
-import java.util.Map;
-import java.util.function.BiPredicate;
-
-import com.google.common.collect.ImmutableMap;
-
 /**
+ * Builder for creating filters.
+ *
  * @author mcarter
  */
-public interface FilterBuilder2<T,U> {
+public interface FilterBuilder2<T extends Filter, K, V> {
 
-	static <T,U> Filter<T> createFilterWhere(U property, BiPredicate<T, U> predicate) {
-		return resource -> predicate.test(resource,property);
-	}
+    T isEqualTo(K property, V value);
 
-	BiPredicate<T,U> isGreaterThan(T resource, U property);
+    T isGreaterThan(K property, V value);
 
-	BiPredicate<T, U> and(BiPredicate<T,U> other);
+    T isLessThan(K property, V value);
 
-	public static void main(String[] args) {
+    T matchesWithExpression(K property, V value);
 
-		ImmutableMap<String, String> m = ImmutableMap.of("firstname", "Bob", "surname", "Smith", "role", "administrator", "age", "9", "happy", "true");
+    T isTrue(K property);
 
-	}
+    T isFalse(K property);
+
+    T and(T first, T second);
+
+    T or(T first, T second);
+
+    T not(T filter);
 }

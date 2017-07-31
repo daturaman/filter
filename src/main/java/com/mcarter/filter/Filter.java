@@ -1,15 +1,20 @@
 package com.mcarter.filter;
 
 /**
- * A where that can be used to compare against instances of a given type T.
+ * A filter that can be used to match properties of a given type T.
  *
- * @param <T> the type that this where will be used to compare against.
+ * @param <T> the type for this filter.
  */
-@FunctionalInterface
 public interface Filter<T> {
+    /**
+     * Matches this filter against a given object
+     *
+     * @param t the object to match against
+     * @return true if there is a match for this filter
+     */
     boolean matches(T t);
 
-    default Filter<T> and(Filter<T> other){
+    default Filter<T> and(Filter<T> other) {
         return t -> this.matches(t) && other.matches(t);
     }
 
@@ -17,7 +22,7 @@ public interface Filter<T> {
         return t -> this.matches(t) || other.matches(t);
     }
 
-    default Filter<T> not(){
+    default Filter<T> not() {
         return t -> !this.matches(t);
     }
 }
