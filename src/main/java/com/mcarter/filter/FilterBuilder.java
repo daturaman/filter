@@ -5,8 +5,8 @@ package com.mcarter.filter;
  * for creating filters, the structure of which is enforced by nesting interfaces.
  *
  * @param <T> The type whose properties will be filtered.
- * @param <K>
- * @param <V>
+ * @param <K> Type of the property to be filtered.
+ * @param <V> Type of the property value.
  */
 public abstract class FilterBuilder<T, K, V> {
 
@@ -23,6 +23,10 @@ public abstract class FilterBuilder<T, K, V> {
         Filter<T> isLessThan(V value);
 
         Filter<T> matches(V value);
+
+        Filter<T> isTrue();
+
+        Filter<T> isFalse();
     }
 
     public abstract FilterQuery<T, K, V> filter();
