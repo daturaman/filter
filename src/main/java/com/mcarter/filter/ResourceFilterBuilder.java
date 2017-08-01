@@ -1,53 +1,60 @@
 package com.mcarter.filter;
 
-import java.util.Map;
-
-public class ResourceFilterBuilder extends FilterBuilder<Map<String, String>, String, String> {
-
-    private static final String FILTER_STRING = "Filter where %s %s %s";
-    private String filterString;
+/**
+ * Builder for creating {@link ResourceFilter}s.
+ */
+public class ResourceFilterBuilder implements FilterBuilder<ResourceFilter, String, String> {
 
     @Override
-    public FilterQuery<Map<String, String>, String, String> filter() {
-        return property -> new PredicateQuery<Map<String, String>, String>() {
-			@Override
-			public Filter<Map<String, String>> isEqualTo(String value) {
-			    filterString = String.format(FILTER_STRING, property, "=", value);
-				return resource -> resource.containsKey(property) &&
-						resource.get(property).equals(value);
-			}
+    public ResourceFilter isEqualTo(String property, String value) {
+        return new ResourceFilter(t -> t.containsKey(property) &&
+                t.get(property).equals(value),
+                String.format(FILTER_FORMAT, property, "[is equal to]", value));
+    }
 
-			@Override
-			public Filter<Map<String, String>> isGreaterThan(String value) {
-                filterString = String.format(FILTER_STRING, property, ">", value);
-				return resource -> resource.containsKey(property) &&
-						Integer.parseInt(resource.get(property)) > Integer.parseInt(value);
-			}
+    @Override
+    public ResourceFilter isLessThan(String property, String value) {
+        return new ResourceFilter(t -> t.containsKey(property) &&
+                Integer.parseInt(t.get(property)) < Integer.parseInt(value),
+                String.format(FILTER_FORMAT, property, "[is less than]", value));
+    }
 
-			@Override
-			public Filter<Map<String, String>> isLessThan(String value) {
-                filterString = String.format(FILTER_STRING, property, "<", value);
-				return resource -> resource.containsKey(property) &&
-						Integer.parseInt(resource.get(property)) < Integer.parseInt(value);
-			}
+    @Override
+    public ResourceFilter isGreaterThan(String property, String value) {
+        return new ResourceFilter(t -> t.containsKey(property) &&
+                Integer.parseInt(t.get(property)) > Integer.parseInt(value),
+                String.format(FILTER_FORMAT, property, "[is greater than]", value));
+    }
 
-			@Override
-			public Filter<Map<String, String>> matches(String value) {
-                filterString = String.format(FILTER_STRING, property, "MATCHES", value);
-				return resource -> resource.containsKey(property) && resource.get(property).matches(value);
-			}
+    @Override
+    public ResourceFilter matchesWithExpression(String property, String value) {
+        return new ResourceFilter(t -> t.containsKey(property) &&
+                t.get(property).matches(value),
+                String.format(FILTER_FORMAT, property, "[matches expression]", value));
+    }
 
-            @Override
-            public Filter<Map<String, String>> isTrue() {
-				filterString = String.format(FILTER_STRING, property, "is", true);
-                return resource -> resource.containsKey(property) && Boolean.parseBoolean(resource.get(property));
-            }
+    @Override
+    public ResourceFilter isTrue(String property) {
+        return new ResourceFilter( t -> Boolean.parseBoolean(t.get(property)), String.format(FILTER_FORMAT_BOOL, property, "[is true]"));
+    }
 
-            @Override
-            public Filter<Map<String, String>> isFalse() {
-				filterString = String.format(FILTER_STRING, property, "is", false);
-				return resource -> resource.containsKey(property) && !Boolean.parseBoolean(resource.get(property));
-            }
-		};
+    @Override
+    public ResourceFilter isFalse(String property) {
+        return new ResourceFilter( t -> !Boolean.parseBoolean(t.get(property)), String.format(FILTER_FORMAT_BOOL, property, "[is true]"));
+    }
+
+    @Override
+    public ResourceFilter and(ResourceFilter first, ResourceFilter second) {
+        return new ResourceFilter(t -> first.matches(t) && second.matches(t), first.getDescription() + " AND " + second.getDescription());
+    }
+
+    @Override
+    public ResourceFilter or(ResourceFilter first, ResourceFilter second) {
+		return new ResourceFilter(t -> first.matches(t) || second.matches(t), first.getDescription() + " OR " + second.getDescription());
+    }
+
+    @Override
+    public ResourceFilter not(ResourceFilter filter) {
+        return new ResourceFilter(filter.getPredicate().negate(), filter.getDescription() + " NOT ");
     }
 }

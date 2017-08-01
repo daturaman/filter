@@ -5,24 +5,13 @@ package com.mcarter.filter;
  *
  * @param <T> the type for this filter.
  */
+@FunctionalInterface
 public interface Filter<T> {
-    /**
-     * Matches this filter against a given object
-     *
-     * @param t the object to match against
-     * @return true if there is a match for this filter
-     */
-    boolean matches(T t);
-
-    default Filter<T> and(Filter<T> other) {
-        return t -> this.matches(t) && other.matches(t);
-    }
-
-    default Filter<T> or(Filter<T> other) {
-        return t -> this.matches(t) || other.matches(t);
-    }
-
-    default Filter<T> not() {
-        return t -> !this.matches(t);
-    }
+	/**
+	 * Matches this filter against a given object
+	 *
+	 * @param t the object to match against
+	 * @return true if there is a match for this filter
+	 */
+	boolean matches(T t);
 }

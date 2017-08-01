@@ -1,33 +1,98 @@
+/*
+ * <copyright>
+ *
+ * Copyright (c) 2010 - 2017 Gresham Technologies plc. All rights reserved.
+ *
+ * </copyright>
+ */
 package com.mcarter.filter;
 
 /**
- * Builder for creating Filters of a given type. Uses the fluent interface pattern to provide a DSL
- * for creating filters, the structure of which is enforced by nesting interfaces.
+ * Builder for creating filters.
  *
- * @param <T> The type whose properties will be filtered.
- * @param <K> Type of the property to be filtered.
- * @param <V> Type of the property value.
+ * @author mcarter
  */
-public abstract class FilterBuilder<T, K, V> {
+public interface FilterBuilder<T extends Filter, K, V> {
 
-    @FunctionalInterface
-    public interface FilterQuery<T, K, V> {
-        PredicateQuery<T, V> where(K property);
-    }
+	String FILTER_FORMAT = "Filter where [property=%s, condition=%s, value=%s]";
+	String FILTER_FORMAT_BOOL = "Filter where [property=%s, condition=%s]";
 
-    public interface PredicateQuery<T, V> {
-        Filter<T> isEqualTo(V value);
+	/**
+	 * Creates a filter which returns <code>true</code> when <code>property == value</code>.
+	 *
+	 * @param property name of the property that will be filtered against.
+	 * @param value    value to filter against.
+	 * @return a new filter.
+	 */
+	T isEqualTo(K property, V value);
 
-        Filter<T> isGreaterThan(V value);
+	/**
+	 * Creates a filter which returns <code>true</code> when <code>property > value</code>.
+	 *
+	 * @param property name of the property that will be filtered against.
+	 * @param value    value to filter against.
+	 * @return a new filter.
+	 */
+	T isGreaterThan(K property, V value);
 
-        Filter<T> isLessThan(V value);
+	/**
+	 * Creates a filter which returns <code>true</code> when <code>property < value</code>.
+	 *
+	 * @param property name of the property that will be filtered against.
+	 * @param value    value to filter against.
+	 * @return a new filter.
+	 */
+	T isLessThan(K property, V value);
 
-        Filter<T> matches(V value);
+	/**
+	 * Creates a filter which returns <code>true</code> when <code>property</code> matches the regular expression
+	 * represented by <code>value</code>.
+	 *
+	 * @param property name of the property that will be filtered against.
+	 * @param value    regular expression to filter against.
+	 * @return a new filter.
+	 */
+	T matchesWithExpression(K property, V value);
 
-        Filter<T> isTrue();
+	/**
+	 * Creates a filter which tests if the value of <code>property</code> is <code>true</code>.
+	 *
+	 * @param property name of the property that will be filtered against.
+	 * @return a new filter.
+	 */
+	T isTrue(K property);
 
-        Filter<T> isFalse();
-    }
+	/**
+	 * Creates a filter which tests if the value of <code>property</code> is <code>false</code>.
+	 *
+	 * @param property name of the property that will be filtered against.
+	 * @return a new filter.
+	 */
+	T isFalse(K property);
 
-    public abstract FilterQuery<T, K, V> filter();
+	/**
+	 * Creates a new filter by combining two existing filters using short circuit logical AND.
+	 *
+	 * @param first  the first filter to combine.
+	 * @param second the second filter to combine.
+	 * @return a new filter by combining <code>first</code> and <code>second</code> using short circuit logical AND.
+	 */
+	T and(T first, T second);
+
+	/**
+	 * Creates a new filter by combining two existing filters using short circuit logical OR.
+	 *
+	 * @param first  the first filter to combine.
+	 * @param second the second filter to combine.
+	 * @return a new filter by combining <code>first</code> and <code>second</code> using short circuit logical OR.
+	 */
+	T or(T first, T second);
+
+	/**
+	 * Returns a new filter whose predicate is a negation of the provided filter's.
+	 *
+	 * @param filter filter whose predicate is to be negated.
+	 * @return a new filter whose predicate is a negation of <code>filter<</code>.
+	 */
+	T not(T filter);
 }
